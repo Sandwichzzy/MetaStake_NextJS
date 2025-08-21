@@ -1,7 +1,6 @@
 import {
   type PublicClient,
   type WalletClient,
-  type Account,
   type Chain,
   createPublicClient as viemCreatePublicClient,
   createWalletClient as viemCreateWalletClient,
@@ -22,11 +21,11 @@ export interface ViemClientConfig {
 const CHAIN_CONFIGS: ViemClientConfig[] = [
   {
     chain: sepolia,
-    rpcUrl: "https://sepolia.infura.io/v3/d8ed0bd1de8242d998a1405b6932ab33",
+    rpcUrl: "https://eth-sepolia.g.alchemy.com/v2/56HjACR3rieEsXnBAsET7",
   },
   {
     chain: mainnet,
-    rpcUrl: "https://mainnet.infura.io/v3/d8ed0bd1de8242d998a1405b6932ab33",
+    rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/56HjACR3rieEsXnBAsET7",
   },
 ];
 
@@ -57,10 +56,12 @@ export const isChainSupported = (chainId: number): boolean => {
 /**
  * 创建区块链客户端
  * @param chainId 链ID
+ * @param account 可选账户信息
  * @returns 公共客户端和钱包客户端
  */
 export const viemClients = (
-  chainId: number
+  chainId: number,
+  account?: `0x${string}`
 ): {
   publicClient: PublicClient;
   walletClient: WalletClient;
@@ -75,6 +76,7 @@ export const viemClients = (
   const walletClient = viemCreateWalletClient({
     chain,
     transport: http(rpcUrl),
+    ...(account && { account }),
   });
 
   return { publicClient, walletClient };
