@@ -1,1 +1,260 @@
 @import "tailwindcss";
+
+/* 元宇宙科技风格全局样式 */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-gray-900 text-white font-mono;
+    background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f0f 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* 动态背景网格 */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(
+        rgba(0, 255, 255, 0.1) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -1;
+    animation: grid-move 20s linear infinite;
+  }
+
+  /* 粒子效果背景 */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        2px 2px at 20px 30px,
+        rgba(0, 255, 255, 0.3),
+        transparent
+      ),
+      radial-gradient(2px 2px at 40px 70px, rgba(255, 0, 255, 0.3), transparent),
+      radial-gradient(1px 1px at 90px 40px, rgba(0, 255, 255, 0.5), transparent),
+      radial-gradient(
+        1px 1px at 130px 80px,
+        rgba(255, 0, 255, 0.5),
+        transparent
+      );
+    background-repeat: repeat;
+    background-size: 200px 150px;
+    z-index: -1;
+    animation: particles-float 30s linear infinite;
+  }
+}
+
+@layer components {
+  /* 发光按钮效果 */
+  .btn-cyber {
+    @apply relative px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold 
+           rounded-lg border border-cyan-400 shadow-lg transition-all duration-300;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .btn-cyber:hover {
+    @apply transform scale-105;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+  }
+
+  .btn-cyber:active {
+    @apply transform scale-95;
+  }
+
+  .btn-cyber:disabled {
+    @apply opacity-50 cursor-not-allowed transform scale-100;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+
+  /* 次要按钮 */
+  .btn-cyber-secondary {
+    @apply relative px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold 
+           rounded-lg border border-purple-400 shadow-lg transition-all duration-300;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+
+  .btn-cyber-secondary:hover {
+    @apply transform scale-105;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+  }
+
+  /* 科技风格卡片 */
+  .card-cyber {
+    @apply bg-gray-800/50 backdrop-blur-sm border border-cyan-400/30 rounded-2xl p-6 
+           shadow-2xl transition-all duration-300;
+    box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .card-cyber:hover {
+    @apply border-cyan-400/50;
+    box-shadow: 0 12px 40px rgba(0, 255, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* 输入框样式 */
+  .input-cyber {
+    @apply w-full px-4 py-3 bg-gray-800/50 border border-cyan-400/30 rounded-lg 
+           text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 
+           focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .input-cyber:focus {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(0, 255, 255, 0.2);
+  }
+
+  /* 数据显示区域 */
+  .data-display {
+    @apply bg-gray-900/80 border border-cyan-400/20 rounded-lg p-4 
+           backdrop-blur-sm transition-all duration-300;
+    background: linear-gradient(
+      145deg,
+      rgba(0, 0, 0, 0.4),
+      rgba(0, 255, 255, 0.05)
+    );
+  }
+
+  /* 发光文字 */
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .text-glow-cyan {
+    @apply text-cyan-400;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  }
+
+  .text-glow-purple {
+    @apply text-purple-400;
+    text-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+  }
+
+  /* 加载动画 */
+  .loading-pulse {
+    animation: cyber-pulse 2s ease-in-out infinite;
+  }
+
+  /* 连接状态指示器 */
+  .status-indicator {
+    @apply w-3 h-3 rounded-full;
+    animation: status-blink 2s ease-in-out infinite;
+  }
+
+  .status-connected {
+    @apply bg-green-400;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+  }
+
+  .status-disconnected {
+    @apply bg-red-400;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  }
+}
+
+@layer utilities {
+  /* 自定义动画 */
+  @keyframes grid-move {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(50px, 50px);
+    }
+  }
+
+  @keyframes particles-float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes cyber-pulse {
+    0%,
+    100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes status-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* 渐变边框动画 */
+  @keyframes border-glow {
+    0% {
+      border-color: rgba(0, 255, 255, 0.3);
+    }
+    50% {
+      border-color: rgba(0, 255, 255, 0.8);
+    }
+    100% {
+      border-color: rgba(0, 255, 255, 0.3);
+    }
+  }
+
+  .border-glow-animation {
+    animation: border-glow 3s ease-in-out infinite;
+  }
+}
+
+/* Toast 自定义样式 */
+.Toastify__toast--success {
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.2),
+    rgba(0, 0, 0, 0.8)
+  );
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.2),
+    rgba(0, 0, 0, 0.8)
+  );
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.Toastify__toast--info {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.2),
+    rgba(0, 0, 0, 0.8)
+  );
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #00ffff;
+}
