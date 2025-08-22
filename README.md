@@ -1,29 +1,33 @@
 # MetaStake V1 - 质押项目
 
-这是一个基于 Next.js 的区块链质押项目，使用 viem 和 wagmi 进行区块链交互。
+这是一个基于 Next.js 14 的现代化区块链质押项目，使用 viem 和 wagmi 进行区块链交互。项目采用客户端渲染策略，确保最佳的区块链集成体验。
 
 ## 项目架构
 
 ### 技术栈
 
-- **前端框架**: Next.js 14
-- **区块链交互**: viem + wagmi
-- **钱包连接**: RainbowKit
-- **样式**: Tailwind CSS
-- **状态管理**: TanStack Query
-- **语言**: TypeScript
+- **前端框架**: Next.js 14 (App Router)
+- **区块链交互**: viem + wagmi v2
+- **钱包连接**: RainbowKit v2
+- **样式**: Tailwind CSS v4
+- **状态管理**: TanStack Query v5
+- **语言**: TypeScript 5
+- **渲染策略**: 客户端渲染 (CSR) + 动态导入
 
 ### 项目结构
 
 ```
-stake-fev2/
+MetaStake_NextJS/
 ├── src/
 │   ├── abis/           # 智能合约ABI定义
-│   ├── app/            # Next.js应用页面
+│   ├── app/            # Next.js App Router页面
+│   ├── components/     # 客户端组件
 │   ├── hooks/          # 自定义React Hooks
 │   └── utils/          # 工具函数
 │       ├── viem.ts     # viem客户端配置
 │       └── contractHelper.ts  # 合约操作封装
+├── next.config.js      # Next.js配置
+├── tailwind.config.js  # Tailwind CSS配置
 ├── package.json
 └── README.md
 ```
@@ -36,7 +40,8 @@ stake-fev2/
 
 - **支持的链**: Sepolia 测试网、以太坊主网
 - **客户端类型**: 公共客户端（只读）、钱包客户端（读写）
-- **配置选项**: 链选择、RPC URL、WebSocket URL
+- **配置选项**: 链选择、RPC URL、自动环境检测
+- **SSR 兼容**: 自动处理服务端渲染和客户端环境差异
 
 #### 主要功能
 
@@ -49,16 +54,16 @@ stake-fev2/
 #### 使用示例
 
 ```typescript
-import { viemClients, createPublicClient } from "./utils/viem";
+import { viemClients, defaultChainId } from "./utils/viem";
 
 // 使用默认配置（Sepolia测试网）
-const { publicClient, walletClient } = viemClients();
+const { publicClient, walletClient } = viemClients(defaultChainId);
 
-// 自定义配置
-const customClient = createPublicClient({
-  chain: mainnet,
-  rpcUrl: "https://mainnet.infura.io/v3/YOUR_API_KEY",
-});
+// 自定义链ID
+const { publicClient, walletClient } = viemClients(1); // mainnet
+
+// 自动环境检测，支持SSR
+const { publicClient, walletClient } = viemClients(chainId);
 ```
 
 ### 2. 合约操作封装 (`src/utils/contractHelper.ts`)
@@ -67,11 +72,11 @@ const customClient = createPublicClient({
 
 #### 核心功能
 
-- **合约实例创建**: `createContractInstance()`
-- **读取操作**: `readContract()`
-- **写入操作**: `writeContract()`
-- **批量读取**: `batchReadContract()`
-- **事件监听**: `getContractEvents()`
+- **合约实例创建**: `getContract()`
+- **读取操作**: 通过合约实例的 `read` 属性
+- **写入操作**: 通过合约实例的 `write` 属性
+- **批量读取**: `batchRead()` - 支持多函数调用
+- **合约状态**: `getContractStatus()` - 获取合约整体状态
 
 #### 质押合约专用类 (`StakeContract`)
 
@@ -103,36 +108,33 @@ const customClient = createPublicClient({
 #### 使用示例
 
 ```typescript
-import { createStakeContract } from "./utils/contractHelper";
+import { useStakeContract } from "@/hooks/useStakeContract";
 
-// 创建质押合约实例
-const stakeContract = createStakeContract(
-  "0x...", // 合约地址
-  { chain: sepolia } // 链配置
-);
+// 在React组件中使用
+const { contract, getStakingBalance, depositETH } = useStakeContract();
 
 // 读取操作
-const poolLength = await stakeContract.getPoolLength();
-const userBalance = await stakeContract.getStakingBalance(0n, userAddress);
+const balance = await getStakingBalance(poolId, userAddress);
 
 // 写入操作
-const txHash = await stakeContract.deposit(0n, amount, account);
+const txHash = await depositETH(amount, account);
 ```
 
 ## 页面结构
 
 ### 主要页面
 
-- **首页** (`/`): 项目介绍和主要功能入口
-- **质押页面** (`/stake`): 质押代币和 ETH
-- **提现页面** (`/withdraw`): 提现质押的代币
-- **奖励页面** (`/rewards`): 查看和领取奖励
+- **首页** (`/`): 质押 ETH 界面，显示账户概览和质押操作
+- **提现页面** (`/withdraw`): 解除质押和提现 ETH
+- **响应式设计**: 支持桌面和移动设备
+- **现代化 UI**: 使用 Tailwind CSS 构建的赛博朋克风格界面
 
 ### 布局结构
 
 - **响应式设计**: 支持桌面和移动设备
 - **现代化 UI**: 使用 Tailwind CSS 构建美观界面
 - **钱包集成**: 支持多种钱包连接
+- **客户端渲染**: 确保区块链功能的最佳兼容性
 
 ## 开发指南
 
@@ -171,41 +173,32 @@ pnpm start
 
 项目使用以下环境变量：
 
-- `NEXT_PUBLIC_INFURA_PROJECT_ID`: Infura 项目 ID
-- `NEXT_PUBLIC_CONTRACT_ADDRESS`: 质押合约地址
-- `NEXT_PUBLIC_CHAIN_ID`: 目标链 ID
+- `NEXT_PUBLIC_STAKE_ADDRESS`: 质押合约地址
+- `NEXT_PUBLIC_WC_PROJECT_ID`: WalletConnect 项目 ID (可选)
+- `NEXT_PUBLIC_ALCHEMY_API_KEY`: Alchemy API 密钥 (用于 RPC)
 
 ### 网络配置
 
-- **Sepolia 测试网**: 默认测试环境
-- **以太坊主网**: 生产环境
+- **Sepolia 测试网**: 默认测试环境 (推荐开发使用)
+- **以太坊主网**: 生产环境支持
+- **多链支持**: 可扩展支持其他 EVM 兼容链
 
-## 安全特性
+## 技术特性
 
-- **权限控制**: 基于角色的访问控制
-- **暂停机制**: 紧急情况下可暂停关键功能
-- **升级机制**: 支持合约升级
-- **事件记录**: 完整的操作事件记录
+### 性能优化
 
-## 贡献指南
+- **客户端渲染**: 避免 SSR 相关的区块链 API 问题
+- **动态导入**: 减少首次加载的 JavaScript 包体
+- **代码分割**: 按需加载组件和功能
+- **构建优化**: 生产环境自动移除 console 和调试代码
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
+## 更新日志
 
-## 许可证
+### v1.0.0 (最新)
 
-MIT License
-
-## 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 项目 Issues
-- 邮箱: [your-email@example.com]
-
----
-
-**注意**: 这是一个质押项目，涉及金融操作，请在使用前充分了解相关风险。
+- ✨ 初始版本发布
+- 🚀 支持 ETH 质押和提现
+- 🔧 客户端渲染优化，解决 SSR 兼容性问题
+- 📱 响应式设计，支持移动端
+- 🎨 现代化赛博朋克风格 UI
+- ⚡ 性能优化，减少首次加载时间
