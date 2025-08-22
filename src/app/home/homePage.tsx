@@ -7,7 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatUnits, parseUnits } from "viem";
 import { toast } from "react-toastify";
 import { Pid } from "@/utils";
-import { viemClients } from "@/utils/viem";
+import { viemClients, defaultChainId } from "@/utils/viem";
 
 const HomePage = () => {
   const { contract, getStakingBalance, depositETH } = useStakeContract();

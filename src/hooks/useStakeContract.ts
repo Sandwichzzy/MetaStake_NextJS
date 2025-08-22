@@ -31,6 +31,12 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
         return;
       }
 
+      // 服务端渲染保护
+      if (typeof window === "undefined") {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);

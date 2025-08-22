@@ -1,6 +1,6 @@
-import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { baseAccount, injected, walletConnect } from 'wagmi/connectors'
+import { cookieStorage, createConfig, createStorage, http } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
+import { baseAccount, injected, walletConnect } from "wagmi/connectors";
 
 export function getConfig() {
   return createConfig({
@@ -18,11 +18,11 @@ export function getConfig() {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
     },
-  })
+  });
 }
 
-declare module 'wagmi' {
+declare module "wagmi" {
   interface Register {
-    config: ReturnType<typeof getConfig>
+    config: ReturnType<typeof getConfig>;
   }
 }

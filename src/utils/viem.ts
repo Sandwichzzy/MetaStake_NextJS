@@ -5,6 +5,7 @@ import {
   createPublicClient as viemCreatePublicClient,
   createWalletClient as viemCreateWalletClient,
   http,
+  custom,
 } from "viem";
 import { sepolia, mainnet } from "viem/chains";
 
@@ -21,11 +22,11 @@ export interface ViemClientConfig {
 const CHAIN_CONFIGS: ViemClientConfig[] = [
   {
     chain: sepolia,
-    rpcUrl: "https://eth-sepolia.g.alchemy.com/v2/56HjACR3rieEsXnBAsET7",
+    rpcUrl: "https://eth-sepolia.g.alchemy.com/v2/fG-aPOvf400eDpC5aYtLw",
   },
   {
     chain: mainnet,
-    rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/56HjACR3rieEsXnBAsET7",
+    rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/fG-aPOvf400eDpC5aYtLw",
   },
 ];
 
@@ -73,9 +74,10 @@ export const viemClients = (
     transport: http(rpcUrl),
   });
 
+  // window.ethereum直接使用用户的钱包（如 MetaMask）作为传输层，用户的私钥存储在钱包中，可以签名交易，交易通过用户的钱包发送，而不是通过 RPC 节点
   const walletClient = viemCreateWalletClient({
     chain,
-    transport: http(rpcUrl),
+    transport: custom(window.ethereum), //RPC 节点供应商（如 Alchemy、Infura）的限制，无法直接使用rpcUrl
     ...(account && { account }),
   });
 

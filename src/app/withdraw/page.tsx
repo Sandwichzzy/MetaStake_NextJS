@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { Pid } from "@/utils";
-import { viemClients } from "@/utils/viem";
+import { viemClients, defaultChainId } from "@/utils/viem";
 import { toast } from "react-toastify";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
