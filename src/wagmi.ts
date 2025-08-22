@@ -8,12 +8,14 @@ export function getConfig() {
     connectors: [
       injected(),
       baseAccount(),
-      walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID! }),
+      walletConnect({
+        projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID!,
+      }),
     ],
     storage: createStorage({
       storage: cookieStorage,
     }),
-    ssr: true,
+    ssr: true, // 启用SSR支持，但通过组件级别的客户端检测来处理
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),

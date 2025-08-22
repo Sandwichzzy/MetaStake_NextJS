@@ -30,7 +30,7 @@ const WithdrawPage = () => {
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [userData, setUserData] = useState<UserStakeData>(InitData);
 
-  const { publicClient } = viemClients(chainId as number);
+  const { publicClient } = viemClients(chainId || defaultChainId);
 
   const isWithdrawable = useMemo(() => {
     return Number(userData.withdrawable) > 0 && isConnected;

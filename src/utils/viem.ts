@@ -74,10 +74,13 @@ export const viemClients = (
     transport: http(rpcUrl),
   });
 
-  // window.ethereum直接使用用户的钱包（如 MetaMask）作为传输层，用户的私钥存储在钱包中，可以签名交易，交易通过用户的钱包发送，而不是通过 RPC 节点
+  // 钱包客户端 - 只在浏览器环境中创建
   const walletClient = viemCreateWalletClient({
     chain,
-    transport: custom(window.ethereum), //RPC 节点供应商（如 Alchemy、Infura）的限制，无法直接使用rpcUrl
+    transport:
+      typeof window !== "undefined" && window.ethereum
+        ? custom(window.ethereum)
+        : http(rpcUrl), // fallback到HTTP transport
     ...(account && { account }),
   });
 
