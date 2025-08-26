@@ -3,9 +3,31 @@ import { type Address } from "viem";
 import { getContract } from "../utils/contractHelper";
 import { stakeAbi } from "../abis/stake";
 import { sepolia } from "viem/chains";
+import { ETH_PID, ERC20_PID, PoolId, getPoolConfig } from "../utils";
 
 // 合约地址类型
 type StakeContractAddress = Address;
+
+// 用户质押数据类型
+export type UserStakeData = {
+  poolId: PoolId;
+  staked: bigint;
+  pendingReward: bigint;
+  withdrawPending: bigint;
+  withdrawable: bigint;
+};
+
+// 池子信息类型
+export type PoolInfo = {
+  poolId: PoolId;
+  stTokenAddress: Address;
+  poolWeight: bigint;
+  lastRewardBlock: bigint;
+  accMetaNodePerST: bigint;
+  stTokenAmount: bigint;
+  minDepositAmount: bigint;
+  unstakeLockedBlocks: bigint;
+};
 
 // 使用合约的Hook
 export const useStakeContract = (contractAddress?: StakeContractAddress) => {
@@ -120,8 +142,18 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
   }, [readContractData]);
 
   const getPool = useCallback(
-    async (poolId: number) => {
-      return await readContractData("pool", [poolId]);
+    async (poolId: number): Promise<PoolInfo> => {
+      const poolData = await readContractData("pool", [poolId]);
+      return {
+        poolId: poolId as PoolId,
+        stTokenAddress: poolData[0],
+        poolWeight: poolData[1],
+        lastRewardBlock: poolData[2],
+        accMetaNodePerST: poolData[3],
+        stTokenAmount: poolData[4],
+        minDepositAmount: poolData[5],
+        unstakeLockedBlocks: poolData[6],
+      };
     },
     [readContractData]
   );
@@ -143,6 +175,13 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
   const getStakingBalance = useCallback(
     async (poolId: number, user: Address) => {
       return await readContractData("stakingBalance", [poolId, user]);
+    },
+    [readContractData]
+  );
+
+  const getWithdrawAmount = useCallback(
+    async (poolId: number, user: Address) => {
+      return await readContractData("withdrawAmount", [poolId, user]);
     },
     [readContractData]
   );
@@ -260,20 +299,27 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
     }
   }, [batchRead]);
 
-  // 获取用户质押摘要
+  // 获取用户质押摘要（单个池子）
   const getUserStakingSummary = useCallback(
-    async (poolId: number, user: Address) => {
+    async (poolId: number, user: Address): Promise<UserStakeData> => {
       try {
-        const [balance, pendingReward, userInfo] = await batchRead([
+        const [balance, pendingReward, withdrawInfo] = await batchRead([
           { functionName: "stakingBalance", args: [poolId, user] },
           { functionName: "pendingMetaNode", args: [poolId, user] },
-          { functionName: "user", args: [poolId, user] },
+          { functionName: "withdrawAmount", args: [poolId, user] },
         ]);
 
+        const [requestAmount, pendingWithdrawAmount] = withdrawInfo as [
+          bigint,
+          bigint
+        ];
+
         return {
-          balance,
-          pendingReward,
-          userInfo,
+          poolId: poolId as PoolId,
+          staked: balance as bigint,
+          pendingReward: pendingReward as bigint,
+          withdrawPending: requestAmount - pendingWithdrawAmount,
+          withdrawable: pendingWithdrawAmount,
         };
       } catch (error) {
         console.error("Error getting user staking summary:", error);
@@ -281,6 +327,56 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
       }
     },
     [batchRead]
+  );
+
+  // 获取用户所有池子的质押摘要
+  const getAllUserStakingSummary = useCallback(
+    async (user: Address): Promise<UserStakeData[]> => {
+      try {
+        // 获取两个池子的数据
+        const [ethSummary, erc20Summary] = await Promise.all([
+          getUserStakingSummary(ETH_PID, user),
+          getUserStakingSummary(ERC20_PID, user),
+        ]);
+
+        return [ethSummary, erc20Summary];
+      } catch (error) {
+        console.error("Error getting all user staking summary:", error);
+        throw error;
+      }
+    },
+    [getUserStakingSummary]
+  );
+
+  // 获取所有池子信息
+  const getAllPoolsInfo = useCallback(async (): Promise<PoolInfo[]> => {
+    try {
+      const [ethPool, erc20Pool] = await Promise.all([
+        getPool(ETH_PID),
+        getPool(ERC20_PID),
+      ]);
+
+      return [ethPool, erc20Pool];
+    } catch (error) {
+      console.error("Error getting all pools info:", error);
+      throw error;
+    }
+  }, [getPool]);
+
+  // 便捷的质押方法（根据池子类型自动选择）
+  const stakeToPool = useCallback(
+    async (poolId: PoolId, amount: bigint, account: `0x${string}`) => {
+      const poolConfig = getPoolConfig(poolId);
+
+      if (poolConfig.isETH) {
+        // ETH池使用depositETH
+        return await depositETH(amount, account);
+      } else {
+        // ERC20池使用deposit
+        return await deposit(poolId, amount, account);
+      }
+    },
+    [depositETH, deposit]
   );
 
   return {
@@ -298,6 +394,7 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
     getUserInfo,
     getPendingReward,
     getStakingBalance,
+    getWithdrawAmount,
     getTotalPoolWeight,
     getMetaNodeAddress,
     getMetaNodePerBlock,
@@ -312,11 +409,14 @@ export const useStakeContract = (contractAddress?: StakeContractAddress) => {
     requestUnstake,
     withdraw,
     updatePool,
+    stakeToPool, // 新增的便捷质押方法
 
     // 批量操作
     batchRead,
     getContractStatus,
     getUserStakingSummary,
+    getAllUserStakingSummary, // 新增
+    getAllPoolsInfo, // 新增
 
     // 合约地址
     address: address,
