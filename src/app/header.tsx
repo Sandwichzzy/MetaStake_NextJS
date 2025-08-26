@@ -18,6 +18,7 @@ export default function Header() {
   const navItems = [
     { href: "/", label: "Stake", icon: "🔥" },
     { href: "/withdraw", label: "Withdraw", icon: "⚡" },
+    { href: "/rewards", label: "Rewards", icon: "🏆" },
   ];
 
   const isActive = (href: string) => {

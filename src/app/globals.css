@@ -258,3 +258,16 @@
   border: 1px solid rgba(0, 255, 255, 0.3);
   color: #00ffff;
 }
+
+/* 池子选择器样式 */
+.pool-selector {
+  @apply p-6 rounded-lg border-2 text-center transition-all duration-300 cursor-pointer;
+  @apply hover:scale-105 hover:shadow-lg;
+  min-width: 140px;
+  backdrop-filter: blur(10px);
+}
+
+.pool-selector:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}

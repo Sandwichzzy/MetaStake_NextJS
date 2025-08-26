@@ -5,6 +5,7 @@ import { useAccount, useBalance } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatUnits, parseUnits } from "viem";
 import { toast } from "react-toastify";
+import Link from "next/link";
 import { useMultiPoolStaking } from "@/hooks/useMultiPoolStaking";
 import {
   ETH_PID,
@@ -293,13 +294,26 @@ const HomePage = () => {
             {/* 收益预估 */}
             <div className="data-display">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">📈 Total Pending Rewards</span>
-                <span className="text-xl font-bold text-yellow-400">
-                  {formatBalance(
-                    getETHPendingRewards() + getERC20PendingRewards()
-                  )}{" "}
-                  MTN
-                </span>
+                <div>
+                  <span className="text-gray-400">
+                    📈 Total Pending Rewards
+                  </span>
+                  <div className="text-xl font-bold text-yellow-400">
+                    {formatBalance(
+                      getETHPendingRewards() + getERC20PendingRewards()
+                    )}{" "}
+                    MTN
+                  </div>
+                </div>
+                {getETHPendingRewards() + getERC20PendingRewards() >
+                  BigInt(0) && (
+                  <Link
+                    href="/rewards"
+                    className="btn-cyber-secondary px-4 py-2 text-sm"
+                  >
+                    🏆 Claim
+                  </Link>
+                )}
               </div>
             </div>
           </div>

@@ -21,7 +21,7 @@ export const POOL_CONFIGS = {
     symbol: "MTN",
     tokenAddress: "0xcF48c309E7e57D5965E4b8DcCe2c5e2Ae59c9d19",
     decimals: 18,
-    icon: "🪙",
+    icon: "🚀",
     color: "purple",
     isETH: false,
   },
