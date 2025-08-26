@@ -35,17 +35,6 @@ export const stakeAbi = [
     inputs: [
       {
         internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "AddressInsufficientBalance",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "implementation",
         type: "address",
       },
@@ -70,7 +59,7 @@ export const stakeAbi = [
   },
   {
     inputs: [],
-    name: "FailedInnerCall",
+    name: "FailedCall",
     type: "error",
   },
   {
@@ -353,31 +342,6 @@ export const stakeAbi = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
-        name: "poolId",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "poolWeight",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "totalPoolWeight",
-        type: "uint256",
-      },
-    ],
-    name: "SetPoolWeight",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
         internalType: "contract IERC20",
         name: "MetaNode",
         type: "address",
@@ -397,6 +361,31 @@ export const stakeAbi = [
       },
     ],
     name: "SetMetaNodePerBlock",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "poolId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "poolWeight",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalPoolWeight",
+        type: "uint256",
+      },
+    ],
+    name: "SetPoolWeight",
     type: "event",
   },
   {
@@ -585,6 +574,19 @@ export const stakeAbi = [
   },
   {
     inputs: [],
+    name: "MetaNodePerBlock",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [
       {
@@ -744,6 +746,64 @@ export const stakeAbi = [
         internalType: "bytes32",
         name: "",
         type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_pid",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "getUserUnstakeRequest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "unlockBlocks",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_pid",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getUserUnstakeRequestsCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -982,19 +1042,6 @@ export const stakeAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "MetaNodePerBlock",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "bytes32",
@@ -1046,29 +1093,6 @@ export const stakeAbi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "_pid",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_poolWeight",
-        type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "_withUpdate",
-        type: "bool",
-      },
-    ],
-    name: "setPoolWeight",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "contract IERC20",
         name: "_MetaNode",
         type: "address",
@@ -1088,6 +1112,29 @@ export const stakeAbi = [
       },
     ],
     name: "setMetaNodePerBlock",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_pid",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_poolWeight",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "_withUpdate",
+        type: "bool",
+      },
+    ],
+    name: "setPoolWeight",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -309,7 +309,7 @@ const WithdrawPage = () => {
                 {/* 提示信息 */}
                 <div className="data-display text-center">
                   <div className="text-xs text-gray-400">
-                    ⚠️ Unstaking initiates a 20-minute cooldown period
+                    ⚠️ Unstaking initiates a 5~10 minute cooldown period
                   </div>
                 </div>
               </div>
@@ -396,7 +396,9 @@ const WithdrawPage = () => {
             <div className="text-center p-4">
               <div className="text-3xl mb-3">2️⃣</div>
               <h4 className="text-lg font-bold text-yellow-400 mb-2">Wait</h4>
-              <p className="text-sm text-gray-400">20-minute cooldown period</p>
+              <p className="text-sm text-gray-400">
+                5-10 minute cooldown period
+              </p>
             </div>
 
             <div className="text-center p-4">
